@@ -1,7 +1,5 @@
 
-參考官網說明實作：
-
-https://developer.android.com/training/data-storage/room/index.html
+## Android Room Persistence Library
 
 ---
 
@@ -10,7 +8,7 @@ User.java
 ```java
 @Entity
 public class User {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     private int uid;
 
     @ColumnInfo(name = "first_name")
@@ -19,8 +17,43 @@ public class User {
     @ColumnInfo(name = "last_name")
     private String lastName;
 
-    // Getters and setters are ignored for brevity,
-    // but they're required for Room to work.
+    public User(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    public int getUid() {
+        return uid;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "uid=" + uid +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                '}';
+    }
 }
 ```
 
@@ -50,7 +83,16 @@ AppDatabase.java
 ```java
 @Database(entities = {User.class}, version = 1)
 public abstract class AppDatabase extends RoomDatabase {
+    public static final String DATABASE_NAME = "SimpleRoomDatabase";
+    private static AppDatabase INSTANCE;
     public abstract UserDao userDao();
+
+    public static AppDatabase getAppDatabase(Context context) {
+        if (INSTANCE == null) {
+            INSTANCE = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, DATABASE_NAME).allowMainThreadQueries().build();
+        }
+        return INSTANCE;
+    }
 }
 ```
 
@@ -104,3 +146,10 @@ For practice, create a db on memory using this:
 appDatabase = Room.inMemoryDatabaseBuilder(context, AppDatabase.class).build();
 ```
 then define some test in this class if all test passed you can do anything about DB CRUD.
+
+---
+
+### Reference:
+https://medium.com/@ajaysaini.official/building-database-with-room-persistence-library-ecf7d0b8f3e9
+https://medium.com/@magdamiu/android-room-persistence-library-97ad0d25668e
+https://developer.android.com/training/data-storage/room/index.html
