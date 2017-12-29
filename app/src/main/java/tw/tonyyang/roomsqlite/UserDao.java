@@ -3,6 +3,7 @@ package tw.tonyyang.roomsqlite;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public interface UserDao {
             + "last_name LIKE :last LIMIT 1")
     User findByName(String first, String last);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(User... users);
 
     @Delete
